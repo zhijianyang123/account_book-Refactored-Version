@@ -12,7 +12,6 @@ import 'package:account_new/utils/stats_calculator.dart';
 import 'package:account_new/widgets/immersive.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:keframe/keframe.dart';
 import 'package:provider/provider.dart';
 
 /// 统计 Tab.
@@ -90,58 +89,38 @@ class _StatsScreenState extends State<StatsScreen> {
                 : ListView(
                     padding: const EdgeInsets.fromLTRB(12, 4, 12, 120),
                     children: [
-                      _deferred(0, 150,
-                          _summaryCard(t, stats, expenseColor, incomeColor)),
+                      _summaryCard(t, stats, expenseColor, incomeColor),
                       const SizedBox(height: 14),
-                      _deferred(
-                        1,
-                        260,
-                        _pieCard(
-                          t,
-                          title: t.t('stats_expense_distribution'),
-                          data: stats.expenseCategories,
-                          categories: categories,
-                          emptyText: t.t('stats_no_expense'),
-                          fallbackColor: expenseColor,
-                          total: stats.expenseCents,
-                        ),
+                      _pieCard(
+                        t,
+                        title: t.t('stats_expense_distribution'),
+                        data: stats.expenseCategories,
+                        categories: categories,
+                        emptyText: t.t('stats_no_expense'),
+                        fallbackColor: expenseColor,
+                        total: stats.expenseCents,
                       ),
                       const SizedBox(height: 14),
-                      _deferred(
-                        2,
-                        260,
-                        _pieCard(
-                          t,
-                          title: t.t('stats_income_distribution'),
-                          data: stats.incomeCategories,
-                          categories: categories,
-                          emptyText: t.t('stats_no_income'),
-                          fallbackColor: incomeColor,
-                          total: stats.incomeCents,
-                        ),
+                      _pieCard(
+                        t,
+                        title: t.t('stats_income_distribution'),
+                        data: stats.incomeCategories,
+                        categories: categories,
+                        emptyText: t.t('stats_no_income'),
+                        fallbackColor: incomeColor,
+                        total: stats.incomeCents,
                       ),
                       const SizedBox(height: 14),
-                      _deferred(
-                          3, 220, _categorySummaryCard(t, stats, categories)),
+                      _categorySummaryCard(t, stats, categories),
                       const SizedBox(height: 14),
-                      _deferred(4, 240,
-                          _trendCard(t, stats, expenseColor, incomeColor)),
+                      _trendCard(t, stats, expenseColor, incomeColor),
                       const SizedBox(height: 14),
-                      _deferred(5, 180, _budgetCard(t, stats, expenseColor)),
+                      _budgetCard(t, stats, expenseColor),
                     ],
                   ),
           ),
         ],
       ),
-    );
-  }
-
-  /// Renders [child] on a later frame so tab switches stay smooth.
-  Widget _deferred(int index, double height, Widget child) {
-    return FrameSeparateWidget(
-      index: index,
-      placeHolder: SizedBox(height: height),
-      child: child,
     );
   }
 
@@ -278,6 +257,7 @@ class _StatsScreenState extends State<StatsScreen> {
                   },
                 ),
               ),
+              duration: Duration.zero,
             ),
           ),
           const SizedBox(height: 8),
@@ -414,6 +394,7 @@ class _StatsScreenState extends State<StatsScreen> {
                   expenseColor),
             ],
           ),
+          duration: Duration.zero,
         ),
       ),
     );

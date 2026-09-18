@@ -83,7 +83,6 @@ class _LicensesScreen extends StatelessWidget {
     ('fl_chart', 'MIT'),
     ('intl', 'BSD-3-Clause'),
     ('file_picker', 'MIT'),
-    ('keframe', 'MIT'),
     ('collection', 'BSD-3-Clause'),
   ];
 
