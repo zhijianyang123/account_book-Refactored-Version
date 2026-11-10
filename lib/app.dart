@@ -1,9 +1,9 @@
+import 'package:account_new/l10n/app_localization_delegates.dart';
 import 'package:account_new/l10n/app_localizations.dart';
 import 'package:account_new/providers/settings_provider.dart';
 import 'package:account_new/screens/root_shell.dart';
 import 'package:account_new/theme/app_theme.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 
 class AccountApp extends StatelessWidget {
@@ -29,9 +29,9 @@ class AccountApp extends StatelessWidget {
       supportedLocales: AppLocalizations.supportedLocales,
       localizationsDelegates: const [
         AppLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
+        AppMaterialLocalizationsDelegate(),
+        AppWidgetsLocalizationsDelegate(),
+        AppCupertinoLocalizationsDelegate(),
       ],
       home: const RootShell(),
     );

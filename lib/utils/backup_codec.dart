@@ -7,7 +7,9 @@ class BackupCodec {
   BackupCodec._();
 
   static const int currentSchemaVersion = 1;
-  static const String appVersion = '1.0.0';
+
+  /// Kept in sync with `version` in pubspec.yaml.
+  static const String appVersion = '2.1.0';
 
   static const String fileNamePrefix = '记账本备份';
 

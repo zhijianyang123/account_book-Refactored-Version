@@ -44,6 +44,10 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
+# Locally built release artifacts (split APKs, obfuscation symbols)
+/dist/
+/build/symbols/
+
 # Release signing secrets — keep these out of version control.
 /android/key.properties
 /android/app/*.jks

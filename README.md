@@ -2,9 +2,16 @@
 
 一个本地离线的 Flutter 记账应用，支持收支记录、统计图表、预算管理、数据导入导出等功能。数据仅保存在设备本地，无需联网。
 
-**当前版本：v2.0.0**
+**当前版本：v2.1.0**
 
 ## 更新日志
+
+### v2.1.0
+- 安装包体积优化：默认不再产出包含三种 CPU 架构的通用 APK，改为按 ABI 拆分（arm64-v8a / armeabi-v7a），并剔除仅模拟器使用的 x86_64
+- 开启 Dart 符号混淆（`--obfuscate`），进一步压缩 `libapp.so`
+- 精简本地化数据：仅打包英文与简体中文的语言资源，AOT 快照去掉其余约 110 种语言
+- 修复“关于”页与导出备份中的版本号与应用版本不一致的问题
+- 通用 APK 由 ~51.5 MB 降至 arm64-v8a ~16.5 MB、armeabi-v7a ~14.0 MB
 
 ### v2.0.0
 - 移除 `keframe` 依赖，简化统计页渲染逻辑，直接渲染所有卡片
@@ -111,7 +118,12 @@ lib/
 ├── services/                 # 服务
 │   └── import_export_service.dart
 └── l10n/                     # 国际化
-    └── app_localizations.dart
+    ├── app_localizations.dart
+    └── app_localization_delegates.dart  # 仅中/英的本地化 delegate（精简体积）
+
+tool/
+├── build_release.ps1         # Windows 一键构建精简正式包
+└── build_release.sh          # macOS / Linux 一键构建精简正式包
 ```
 
 ## 数据模型
@@ -158,13 +170,46 @@ flutter run
 
 ### 构建 APK
 
-```bash
-flutter build apk --release
+为获得最小体积，使用随仓库提供的脚本按 ABI 拆分构建：
+
+```powershell
+# Windows
+powershell -ExecutionPolicy Bypass -File tool/build_release.ps1
 ```
 
-生成的 APK 位于 `build/app/outputs/flutter-apk/` 目录下。
+```bash
+# macOS / Linux
+bash tool/build_release.sh
+```
 
-> **注意**：发布版本签名配置位于 `android/key.properties`，该文件已被 `.gitignore` 排除，不会上传到仓库。如需生成正式签名 APK，需自行配置 keystore。
+脚本等价于：
+
+```bash
+flutter build apk --release \
+  --split-per-abi \
+  --target-platform android-arm,android-arm64 \
+  --obfuscate --split-debug-info=build/symbols
+```
+
+生成的 APK 位于 `build/app/outputs/flutter-apk/`，并会复制到 `dist/`：
+
+| 文件 | 适用设备 | 体积 |
+|------|----------|------|
+| `app-arm64-v8a-release.apk` | 绝大多数现代手机（推荐） | ~16.5 MB |
+| `app-armeabi-v7a-release.apk` | 较老的 32 位设备 | ~14.0 MB |
+
+> **注意**：发布签名配置位于 `android/key.properties`，keystore 为 `android/app/account_new.jks`，两者均已被 `.gitignore` 排除，不会上传到仓库。只要沿用同一 keystore，新包即可直接覆盖安装旧版本。
+
+### 安装包体积优化说明
+
+默认的 `flutter build apk --release` 会把三种 CPU 架构（`arm64-v8a`、`armeabi-v7a`、`x86_64`）全部打进同一个通用 APK，其中仅模拟器使用的 `x86_64` 就占约 19 MB。本项目的优化策略：
+
+1. **按 ABI 拆分**：每个架构单独打包，并剔除 `x86_64`，体积直接下降约 2/3。
+2. **Dart 符号混淆**：`--obfuscate` 让 `libapp.so` 再小约 1 MB；`--split-debug-info` 导出符号表用于还原崩溃堆栈（不入 APK）。
+3. **精简本地化**：`lib/l10n/app_localization_delegates.dart` 只引用英文与简体中文的翻译包，使 AOT 快照丢弃其余约 110 种语言（约 0.2 MB）。
+4. **图标 tree-shaking**：Flutter 默认会把 `MaterialIcons` 由 ~1.6 MB 裁剪到 ~18 KB。
+
+如需兼容模拟器的通用包，可执行 `flutter build apk --release`（体积较大）。
 
 ## 使用指南
 
