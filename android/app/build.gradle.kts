@@ -17,6 +17,10 @@ if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(FileInputStream(keystorePropertiesFile))
 }
 
+// NOTE: For release builds prefer the split-per-ABI flow in
+// tool/build_release.ps1 / tool/build_release.sh. A plain
+// `flutter build apk --release` produces a large universal APK that bundles
+// arm64-v8a + armeabi-v7a + x86_64 (the emulator-only x86_64 alone is ~19 MB).
 android {
     namespace = "com.example.account_new"
     compileSdk = flutter.compileSdkVersion
